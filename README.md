@@ -13,6 +13,7 @@ The solution covers:
 Designed as a **portfolio project**, this repository highlights practical expertise in **data engineering, business intelligence, and SAP B1 systems integration**.  
 
 ---
+
 ## 🏗️ Data Architecture
 
 The data architecture for this project follows Medallion Architecture **Bronze**, **Silver**, and **Gold** layers:
@@ -23,6 +24,7 @@ Bronze Layer: Stores raw data extracted directly from SAP Business One SQL Serve
 Silver Layer: Cleansed and standardized data. This layer applies data cleansing, standardization, normalization, and enrichment. Derived columns and integrations are also handled here, ensuring consistency and accuracy across entities.
 
 Gold Layer: Contains business-ready data optimized for analytics. Data is transformed into star schemas, flat tables, or aggregated views with applied business logic, enabling efficient reporting, ad-hoc queries, and machine learning use cases.
+
 ---
 
 ## 📖 Project Overview
