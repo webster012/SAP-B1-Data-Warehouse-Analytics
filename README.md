@@ -1,5 +1,3 @@
-<img width="867" height="656" alt="HIGH LEVEL ARCHITECTURE FOR SAP B1 DWH ANALYTICS drawio" src="https://github.com/user-attachments/assets/ada0bb52-b86e-4008-a760-812813d0b43d" /># SAP B1 SQL Data Warehouse Project  
-
 Welcome to the **SAP B1 SQL Data Warehouse Project** repository! 📊  
 
 This project demonstrates the end-to-end process of building a **data warehouse solution for SAP Business One (SAP B1)**, designed to centralize and optimize business data for analytics and reporting.  
@@ -14,7 +12,9 @@ Designed as a **portfolio project**, this repository highlights practical expert
 
 ---
 ###🏗️ Data Architecture
+
 The data architecture for this project follows Medallion Architecture Bronze, Silver, and Gold layers:
+
 <img width="867" height="656" alt="HIGH LEVEL ARCHITECTURE FOR SAP B1 DWH ANALYTICS drawio" src="https://github.com/user-attachments/assets/ada0bb52-b86e-4008-a760-812813d0b43d" /># SAP B1 SQL Data Warehouse Project  
 
 
