@@ -19,11 +19,11 @@ Designed as a **portfolio project**, this repository highlights practical expert
 The data architecture for this project follows Medallion Architecture **Bronze**, **Silver**, and **Gold** layers:
 <img width="867" height="656" alt="HIGH LEVEL ARCHITECTURE FOR SAP B1 DWH ANALYTICS drawio" src="https://github.com/user-attachments/assets/ada0bb52-b86e-4008-a760-812813d0b43d" />
 
-Bronze Layer: Stores raw data extracted directly from SAP Business One SQL Server tables. Data is ingested via batch processing (full load: truncate & insert) without transformations, preserving the source system’s structure.
+1. **Bronze Layer**: Stores raw data extracted directly from SAP Business One SQL Server tables. Data is ingested via batch processing (full load: truncate & insert) without transformations, preserving the source system’s structure.
 
-Silver Layer: Cleansed and standardized data. This layer applies data cleansing, standardization, normalization, and enrichment. Derived columns and integrations are also handled here, ensuring consistency and accuracy across entities.
+2. **Silver Layer**: Cleansed and standardized data. This layer applies data cleansing, standardization, normalization, and enrichment. Derived columns and integrations are also handled here, ensuring consistency and accuracy across entities.
 
-Gold Layer: Contains business-ready data optimized for analytics. Data is transformed into star schemas, flat tables, or aggregated views with applied business logic, enabling efficient reporting, ad-hoc queries, and machine learning use cases.
+3. **Gold Layer**: Contains business-ready data optimized for analytics. Data is transformed into star schemas, flat tables, or aggregated views with applied business logic, enabling efficient reporting, ad-hoc queries, and machine learning use cases.
 
 ---
 
