@@ -18,9 +18,7 @@ Designed as a **portfolio project**, this repository highlights practical expert
 
 The data architecture for this project follows the **Medallion Architecture** with **Bronze**, **Silver**, and **Gold** layers:  
 
-<img width="867" height="656" alt="HIGH LEVEL ARCHITECTURE FOR SAP B1 DWH ANALYTICS drawio" src="https://github.com/user-attachments/assets/ada0bb52-b86e-4008-a760-812813d0b43d" />  
-
-
+<img width="867" height="656" alt="HIGH LEVEL ARCHITECTURE FOR SAP B1 DWH ANALYTICS drawio" src="https://github.com/user-attachments/assets/e36b18b0-f265-4fc7-ac6d-c5bc317b1230" />
 
 - **Bronze Layer**: Stores raw data extracted directly from **SAP Business One SQL Server tables**. Data is ingested via batch processing (full load: truncate & insert) without transformations, preserving the source system’s structure.  
 
