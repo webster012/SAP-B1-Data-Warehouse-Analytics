@@ -14,34 +14,33 @@ Designed as a **portfolio project**, this repository highlights practical expert
 
 ---
 
-## 🏗️ Data Architecture
+## 🏗️ Data Architecture  
 
-The data architecture for this project follows Medallion Architecture **Bronze**, **Silver**, and **Gold** layers:
+The data architecture for this project follows the **Medallion Architecture** with **Bronze**, **Silver**, and **Gold** layers:  
 
-<img width="867" height="656" alt="HIGH LEVEL ARCHITECTURE FOR SAP B1 DWH ANALYTICS drawio" src="https://github.com/user-attachments/assets/ada0bb52-b86e-4008-a760-812813d0b43d" />
+<img width="867" height="656" alt="HIGH LEVEL ARCHITECTURE FOR SAP B1 DWH ANALYTICS drawio" src="https://github.com/user-attachments/assets/ada0bb52-b86e-4008-a760-812813d0b43d" />  
 
-1. **Bronze Layer**:  Stores raw data extracted directly from SAP Business One SQL Server tables. Data is ingested via batch processing (full load: truncate & insert) without transformations, preserving the source system’s structure.
+- **Bronze Layer**: Stores raw data extracted directly from **SAP Business One SQL Server tables**. Data is ingested via batch processing (full load: truncate & insert) without transformations, preserving the source system’s structure.  
 
-2. **Silver Layer**:  Cleansed and standardized data. This layer applies data cleansing, standardization, normalization, and enrichment. Derived columns and integrations are also handled here, ensuring consistency and accuracy across entities.
+- **Silver Layer**: Cleansed and standardized data. This layer applies **data cleansing, standardization, normalization, and enrichment**. Derived columns and integrations are also handled here, ensuring consistency and accuracy across entities.  
 
-3. **Gold Layer**:  Contains business-ready data optimized for analytics. Data is transformed into star schemas, flat tables, or aggregated views with applied business logic, enabling efficient reporting, ad-hoc queries, and machine learning use cases.
+- **Gold Layer**: Contains **business-ready data** optimized for analytics. Data is transformed into **star schemas, flat tables, or aggregated views** with applied business logic, enabling efficient reporting, ad-hoc queries, and machine learning use cases.  
 
 ---
 
-## 📖 Project Overview
+## 📖 Project Overview  
 
-This project involves:
+This project involves:  
+1. **Data Architecture** – Designing a modern data warehouse using the **Medallion Architecture** (Bronze, Silver, Gold layers).  
+2. **ETL Pipelines** – Extracting, transforming, and loading data from SAP B1 into the warehouse.  
+3. **Data Modeling** – Developing fact and dimension tables optimized for analytical queries.  
+4. **Analytics & Reporting** – Creating SQL-based reports and Power BI dashboards for actionable insights.  
 
-1. **Data Architecture**: Designing a Modern Data Warehouse Using Medallion Architecture **Bronze**, **Silver**, and **Gold** layers.
-2. **ETL Pipelines**: Extracting, transforming, and loading data from source systems into the warehouse.
-3. **Data Modeling**: Developing fact and dimension tables optimized for analytical queries.
-4. **Analytics & Reporting**: Creating SQL-based reports and dashboards for actionable insights.
-
-🎯 This repository is an excellent resource for professionals and students looking to showcase expertise in:
-- SQL Development
-- Data Architect
+🎯 This repository is an excellent resource for professionals and students looking to showcase expertise in:  
+- SQL Development  
+- Data Architecture  
 - Data Engineering  
-- ETL Pipeline Developer  
+- ETL Pipeline Development  
 - Data Modeling  
 - Data Analytics  
 
@@ -64,9 +63,14 @@ Develop a modern data warehouse using SQL Server to consolidate **SAP Business O
   - `[@SCT]` → Sales Classification  
   - `NNM1` → Document Series  
 
-- **Data Quality**: Ensure canceled transactions are excluded, missing values are handled with defaults (`<BLANK>`), and negative balances are properly reflected for credit notes.  
+- **Data Quality**:  
+  - Exclude canceled transactions  
+  - Handle missing values with defaults (`<BLANK>`)  
+  - Properly reflect negative balances for credit notes  
 
-- **Integration**: Combine invoices and credit notes into a **unified sales view (`SALES_VIEW`)**, standardizing calculations for sales, cost, and gross profit.  
+- **Integration**:  
+  - Combine invoices and credit notes into a **unified sales view (`SALES_VIEW`)**  
+  - Standardize calculations for sales, cost, and gross profit  
 
 - **Scope**: Focus on **transaction-level data** (sales and returns) for financial and operational reporting.  
 
