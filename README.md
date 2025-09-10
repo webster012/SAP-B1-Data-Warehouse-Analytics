@@ -20,6 +20,8 @@ The data architecture for this project follows the **Medallion Architecture** wi
 
 <img width="867" height="656" alt="HIGH LEVEL ARCHITECTURE FOR SAP B1 DWH ANALYTICS drawio" src="https://github.com/user-attachments/assets/ada0bb52-b86e-4008-a760-812813d0b43d" />  
 
+
+
 - **Bronze Layer**: Stores raw data extracted directly from **SAP Business One SQL Server tables**. Data is ingested via batch processing (full load: truncate & insert) without transformations, preserving the source system’s structure.  
 
 - **Silver Layer**: Cleansed and standardized data. This layer applies **data cleansing, standardization, normalization, and enrichment**. Derived columns and integrations are also handled here, ensuring consistency and accuracy across entities.  
@@ -36,7 +38,7 @@ This project involves:
 3. **Data Modeling** – Developing fact and dimension tables optimized for analytical queries.  
 4. **Analytics & Reporting** – Creating SQL-based reports and Power BI dashboards for actionable insights.  
 
-🎯 This repository is an excellent resource for professionals and students looking to showcase expertise in:  
+🎯 This repository is an excellent resource to showcase my expertise in:  
 - SQL Development  
 - Data Architecture  
 - Data Engineering  
