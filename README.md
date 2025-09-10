@@ -15,7 +15,7 @@ Designed as a **portfolio project**, this repository highlights practical expert
 ---
 ###🏗️ Data Architecture
 The data architecture for this project follows Medallion Architecture Bronze, Silver, and Gold layers:
-![Uploading HIGH LEVEL ARCHITECTURE FOR SAP B1 DWH ANALYTICS.drawio.png…]()
+<img width="867" height="656" alt="HIGH LEVEL ARCHITECTURE FOR SAP B1 DWH ANALYTICS drawio" src="https://github.com/user-attachments/assets/ada0bb52-b86e-4008-a760-812813d0b43d" /># SAP B1 SQL Data Warehouse Project  
 
 
 
