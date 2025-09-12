@@ -214,3 +214,73 @@ CREATE TABLE bronze.ORDN (
     UpdateDate DATETIME
 );
 GO
+
+/* ================================
+  AP Credit Notes (ORPC = AP Credit Notes Header)
+================================= */
+IF OBJECT_ID('bronze.ORPC','U') IS NOT NULL DROP TABLE bronze.ORPC;
+CREATE TABLE bronze.ORPC (
+    DocEntry INT PRIMARY KEY,
+    DocNum NVARCHAR(50),
+    DocDate DATE,
+    CardCode NVARCHAR(50),
+    CardName NVARCHAR(200),
+    DocTotal DECIMAL(18,2),
+    CANCELED CHAR(1),
+    UpdateDate DATETIME
+);
+GO
+
+
+/* ================================
+  AP Credit Notes (RPC1 = AP Credit Notes Lines)
+================================= */
+IF OBJECT_ID('bronze.RPC1','U') IS NOT NULL DROP TABLE bronze.RPC1;
+CREATE TABLE bronze.RPC1 (
+    DocEntry INT,
+    LineNum INT,
+    ItemCode NVARCHAR(50),
+    Dscription NVARCHAR(200),
+    LineTotal DECIMAL(18,2),
+    Quantity DECIMAL(18,6),
+    StockPrice DECIMAL(18,6),
+    WhsCode NVARCHAR(50),
+    CONSTRAINT PK_RPC1 PRIMARY KEY (DocEntry, LineNum)
+);
+GO
+
+
+/* ================================
+  Goods Receipt PO (OPDN = Header)
+================================= */
+IF OBJECT_ID('bronze.OPDN','U') IS NOT NULL DROP TABLE bronze.OPDN;
+CREATE TABLE bronze.OPDN (
+    DocEntry INT PRIMARY KEY,
+    DocNum NVARCHAR(50),
+    DocDate DATE,
+    CardCode NVARCHAR(50),
+    CardName NVARCHAR(200),
+    DocTotal DECIMAL(18,2),
+    CANCELED CHAR(1),
+    UpdateDate DATETIME
+);
+GO
+
+
+/* ================================
+   Goods Receipt PO (PDN1 Lines) 
+================================= */
+-- Goods Receipt PO (Lines)
+IF OBJECT_ID('bronze.PDN1','U') IS NOT NULL DROP TABLE bronze.PDN1;
+CREATE TABLE bronze.PDN1 (
+    DocEntry INT,
+    LineNum INT,
+    ItemCode NVARCHAR(50),
+    Dscription NVARCHAR(200),
+    LineTotal DECIMAL(18,2),
+    Quantity DECIMAL(18,6),
+    StockPrice DECIMAL(18,6),
+    WhsCode NVARCHAR(50),
+    CONSTRAINT PK_PDN1 PRIMARY KEY (DocEntry, LineNum)
+);
+GO
