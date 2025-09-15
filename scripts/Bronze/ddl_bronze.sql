@@ -14,7 +14,8 @@ CREATE TABLE bronze.OINV (
     DocTotal DECIMAL(18,2),
     DocType NVARCHAR(20),
     CANCELED CHAR(1),
-    Series INT,
+    Series INT NULL,
+    DocType NVARCHAR(20) NULL,
     UpdateDate DATETIME
 );
 GO
@@ -67,6 +68,8 @@ CREATE TABLE bronze.RIN1 (
     Quantity DECIMAL(18,6),
     StockPrice DECIMAL(18,6),
     WhsCode NVARCHAR(50),
+    GrssProfit DECIMAL(18,2) NULL,
+    Price DECIMAL(18,6) NULL,
     CONSTRAINT PK_RIN1 PRIMARY KEY (DocEntry, LineNum)
 );
 GO
