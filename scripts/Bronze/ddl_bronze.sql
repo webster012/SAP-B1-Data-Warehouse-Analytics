@@ -178,6 +178,8 @@ CREATE TABLE bronze.PCH1 (
     Quantity DECIMAL(18,6),
     StockPrice DECIMAL(18,6),
     WhsCode NVARCHAR(50),
+    DiscPrcnt DECIMAL(18,6) NULL,
+    PriceBefDi DECIMAL(18,6) NULL,
     CONSTRAINT PK_PCH1 PRIMARY KEY (DocEntry, LineNum)
 );
 GO
@@ -230,6 +232,7 @@ CREATE TABLE bronze.ORPC (
     CardName NVARCHAR(200),
     DocTotal DECIMAL(18,2),
     CANCELED CHAR(1),
+    Series INT NULL,
     UpdateDate DATETIME
 );
 GO
@@ -248,6 +251,8 @@ CREATE TABLE bronze.RPC1 (
     Quantity DECIMAL(18,6),
     StockPrice DECIMAL(18,6),
     WhsCode NVARCHAR(50),
+    DiscPrcnt DECIMAL(18,6) NULL,
+    PriceBefDi DECIMAL(18,6) NULL,
     CONSTRAINT PK_RPC1 PRIMARY KEY (DocEntry, LineNum)
 );
 GO
@@ -265,6 +270,8 @@ CREATE TABLE bronze.OPDN (
     CardName NVARCHAR(200),
     DocTotal DECIMAL(18,2),
     CANCELED CHAR(1),
+    Series INT NULL,
+    DocStatus CHAR(1) NULL,
     UpdateDate DATETIME
 );
 GO
@@ -284,6 +291,8 @@ CREATE TABLE bronze.PDN1 (
     Quantity DECIMAL(18,6),
     StockPrice DECIMAL(18,6),
     WhsCode NVARCHAR(50),
+    DiscPrcnt DECIMAL(18,6) NULL,
+    PriceBefDi DECIMAL(18,6) NULL,
     CONSTRAINT PK_PDN1 PRIMARY KEY (DocEntry, LineNum)
 );
 GO
