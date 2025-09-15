@@ -200,12 +200,12 @@ BEGIN
             sct.Code, sct.Name, n.Series, n.SeriesName, c.CardType, l.WhsCode, h.DocType;
 
         /* Log success */
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
         VALUES ('sp_Load_Silver_Sales_View', @StartTime, GETDATE(), 'Success', (SELECT COUNT(*) FROM silver.Sales_View));
     END TRY
     BEGIN CATCH
         SET @Err = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Load_Silver_Sales_View', @StartTime, GETDATE(), 'Failed', 0, @Err);
         THROW;
     END CATCH
