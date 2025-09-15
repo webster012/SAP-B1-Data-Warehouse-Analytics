@@ -40,7 +40,7 @@ CREATE PROCEDURE dbo.sp_Merge_OINV
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.OINV AS tgt
@@ -54,7 +54,7 @@ BEGIN
             INSERT (DocEntry, DocNum, DocDate, CardCode, CardName, DocTotal, DocType, CANCELED, Series, UpdateDate)
             VALUES (src.DocEntry, src.DocNum, src.DocDate, src.CardCode, src.CardName, src.DocTotal, src.DocType, src.CANCELED, src.Series, src.UpdateDate);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         -- update checkpoint using max UpdateDate from permanent table
         MERGE dbo.ETL_Checkpoints AS chk
@@ -63,12 +63,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_OINV', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_OINV', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_OINV', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_OINV', 'bronze.OINV', @ErrMsg);
@@ -101,7 +101,7 @@ CREATE PROCEDURE dbo.sp_Merge_INV1
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.INV1 AS tgt
@@ -115,7 +115,7 @@ BEGIN
             INSERT (DocEntry, LineNum, ItemCode, Dscription, LineTotal, GrssProfit, StockPrice, Price, Quantity, WhsCode)
             VALUES (src.DocEntry, src.LineNum, src.ItemCode, src.Dscription, src.LineTotal, src.GrssProfit, src.StockPrice, src.Price, src.Quantity, src.WhsCode);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints AS chk
         USING (SELECT 'INV1' AS SourceTable, GETDATE() AS LastLoadDate) AS srcchk
@@ -123,12 +123,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_INV1', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_INV1', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_INV1', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_INV1', 'bronze.INV1', @ErrMsg);
@@ -159,7 +159,7 @@ CREATE PROCEDURE dbo.sp_Merge_ORIN
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
     BEGIN TRY
         MERGE bronze.ORIN tgt
         USING bronze.stg_ORIN src
@@ -171,7 +171,7 @@ BEGIN
             INSERT (DocEntry, DocNum, DocDate, CardCode, CardName, DocTotal, CANCELED, UpdateDate)
             VALUES (src.DocEntry, src.DocNum, src.DocDate, src.CardCode, src.CardName, src.DocTotal, src.CANCELED, src.UpdateDate);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'ORIN' AS SourceTable, MAX(UpdateDate) AS LastLoadDate FROM bronze.ORIN) srcchk
@@ -179,12 +179,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_ORIN', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_ORIN', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_ORIN', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_ORIN', 'bronze.ORIN', @ErrMsg);
@@ -215,7 +215,7 @@ CREATE PROCEDURE dbo.sp_Merge_RIN1
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.RIN1 tgt
@@ -228,7 +228,7 @@ BEGIN
             INSERT (DocEntry, LineNum, ItemCode, Dscription, LineTotal, Quantity, StockPrice, WhsCode)
             VALUES (src.DocEntry, src.LineNum, src.ItemCode, src.Dscription, src.LineTotal, src.Quantity, src.StockPrice, src.WhsCode);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'RIN1' AS SourceTable, GETDATE() AS LastLoadDate) srcchk
@@ -236,12 +236,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_RIN1', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_RIN1', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_RIN1', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_RIN1', 'bronze.RIN1', @ErrMsg);
@@ -270,7 +270,7 @@ CREATE PROCEDURE dbo.sp_Merge_OCRD
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.OCRD tgt
@@ -283,7 +283,7 @@ BEGIN
             INSERT (CardCode, CardName, Balance, CardType, U_AGENTS, U_SALES_CLASSIFICATION)
             VALUES (src.CardCode, src.CardName, src.Balance, src.CardType, src.U_AGENTS, src.U_SALES_CLASSIFICATION);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'OCRD' AS SourceTable, GETDATE() AS LastLoadDate) srcchk
@@ -291,12 +291,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_OCRD', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_OCRD', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_OCRD', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_OCRD', 'bronze.OCRD', @ErrMsg);
@@ -322,7 +322,7 @@ CREATE PROCEDURE dbo.sp_Merge_OITM
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.OITM tgt
@@ -334,7 +334,7 @@ BEGIN
             INSERT (ItemCode, ItemName, ItmsGrpCod)
             VALUES (src.ItemCode, src.ItemName, src.ItmsGrpCod);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'OITM' AS SourceTable, GETDATE() AS LastLoadDate) srcchk
@@ -342,12 +342,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_OITM', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_OITM', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_OITM', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_OITM', 'bronze.OITM', @ErrMsg);
@@ -372,7 +372,7 @@ CREATE PROCEDURE dbo.sp_Merge_OITB
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.OITB tgt
@@ -383,7 +383,7 @@ BEGIN
         WHEN NOT MATCHED BY TARGET THEN
             INSERT (ItmsGrpCod, ItmsGrpNam) VALUES (src.ItmsGrpCod, src.ItmsGrpNam);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'OITB' AS SourceTable, GETDATE() AS LastLoadDate) srcchk
@@ -391,12 +391,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_OITB', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_OITB', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_OITB', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_OITB', 'bronze.OITB', @ErrMsg);
@@ -421,7 +421,7 @@ CREATE PROCEDURE dbo.sp_Merge_NNM1
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.NNM1 tgt
@@ -432,7 +432,7 @@ BEGIN
         WHEN NOT MATCHED BY TARGET THEN
             INSERT (Series, SeriesName) VALUES (src.Series, src.SeriesName);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'NNM1' AS SourceTable, GETDATE() AS LastLoadDate) srcchk
@@ -440,12 +440,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_NNM1', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_NNM1', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_NNM1', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_NNM1', 'bronze.NNM1', @ErrMsg);
@@ -473,7 +473,7 @@ CREATE PROCEDURE dbo.sp_Merge_OWTR
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.OWTR tgt
@@ -485,7 +485,7 @@ BEGIN
             INSERT (DocEntry, DocNum, DocDate, Filler, UpdateDate)
             VALUES (src.DocEntry, src.DocNum, src.DocDate, src.Filler, src.UpdateDate);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'OWTR' AS SourceTable, MAX(UpdateDate) AS LastLoadDate FROM bronze.OWTR) srcchk
@@ -493,12 +493,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_OWTR', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_OWTR', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_OWTR', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_OWTR', 'bronze.OWTR', @ErrMsg);
@@ -529,7 +529,7 @@ CREATE PROCEDURE dbo.sp_Merge_WTR1
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.WTR1 tgt
@@ -542,7 +542,7 @@ BEGIN
             INSERT (DocEntry, LineNum, ItemCode, Dscription, FromWhsCod, WhsCode, Quantity, StockPrice)
             VALUES (src.DocEntry, src.LineNum, src.ItemCode, src.Dscription, src.FromWhsCod, src.WhsCode, src.Quantity, src.StockPrice);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'WTR1' AS SourceTable, GETDATE() AS LastLoadDate) srcchk
@@ -550,12 +550,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_WTR1', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_WTR1', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_WTR1', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_WTR1', 'bronze.WTR1', @ErrMsg);
@@ -586,7 +586,7 @@ CREATE PROCEDURE dbo.sp_Merge_OPCH
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.OPCH tgt
@@ -599,7 +599,7 @@ BEGIN
             INSERT (DocEntry, DocNum, DocDate, CardCode, CardName, DocTotal, CANCELED, UpdateDate)
             VALUES (src.DocEntry, src.DocNum, src.DocDate, src.CardCode, src.CardName, src.DocTotal, src.CANCELED, src.UpdateDate);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'OPCH' AS SourceTable, MAX(UpdateDate) AS LastLoadDate FROM bronze.OPCH) srcchk
@@ -607,12 +607,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_OPCH', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_OPCH', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_OPCH', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_OPCH', 'bronze.OPCH', @ErrMsg);
@@ -643,7 +643,7 @@ CREATE PROCEDURE dbo.sp_Merge_PCH1
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.PCH1 tgt
@@ -656,7 +656,7 @@ BEGIN
             INSERT (DocEntry, LineNum, ItemCode, Dscription, LineTotal, Quantity, StockPrice, WhsCode)
             VALUES (src.DocEntry, src.LineNum, src.ItemCode, src.Dscription, src.LineTotal, src.Quantity, src.StockPrice, src.WhsCode);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'PCH1' AS SourceTable, GETDATE() AS LastLoadDate) srcchk
@@ -664,12 +664,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_PCH1', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_PCH1', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_PCH1', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_PCH1', 'bronze.PCH1', @ErrMsg);
@@ -694,7 +694,7 @@ CREATE PROCEDURE dbo.sp_Merge_SAT
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.SAT tgt
@@ -705,7 +705,7 @@ BEGIN
         WHEN NOT MATCHED BY TARGET THEN
             INSERT (Code, Name) VALUES (src.Code, src.Name);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'SAT' AS SourceTable, GETDATE() AS LastLoadDate) srcchk
@@ -713,12 +713,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_SAT', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_SAT', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_SAT', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_SAT', 'bronze.SAT', @ErrMsg);
@@ -743,7 +743,7 @@ CREATE PROCEDURE dbo.sp_Merge_SCT
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.SCT tgt
@@ -754,7 +754,7 @@ BEGIN
         WHEN NOT MATCHED BY TARGET THEN
             INSERT (Code, Name) VALUES (src.Code, src.Name);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'SCT' AS SourceTable, GETDATE() AS LastLoadDate) srcchk
@@ -762,12 +762,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_SCT', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_SCT', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_SCT', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_SCT', 'bronze.SCT', @ErrMsg);
@@ -798,7 +798,7 @@ CREATE PROCEDURE dbo.sp_Merge_ORDN
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @ErrMsg NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @ErrMsg NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.ORDN tgt
@@ -811,7 +811,7 @@ BEGIN
             INSERT (DocEntry, DocNum, DocDate, CardCode, CardName, DocTotal, CANCELED, UpdateDate)
             VALUES (src.DocEntry, src.DocNum, src.DocDate, src.CardCode, src.CardName, src.DocTotal, src.CANCELED, src.UpdateDate);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'ORDN' AS SourceTable, MAX(UpdateDate) AS LastLoadDate FROM bronze.ORDN) srcchk
@@ -819,12 +819,12 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate = srcchk.LastLoadDate, UpdatedAt = GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (srcchk.SourceTable, srcchk.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_ORDN', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_ORDN', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @ErrMsg = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Merge_ORDN', @StartTime, GETDATE(), 'Failed', 0, @ErrMsg);
         INSERT INTO dbo.ETL_ErrorLog (SourceTable, TargetTable, ErrorMessage)
         VALUES ('stg_ORDN', 'bronze.ORDN', @ErrMsg);
@@ -861,7 +861,7 @@ CREATE PROCEDURE dbo.sp_Merge_ORPC
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @Err NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @Err NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.ORPC tgt
@@ -874,7 +874,7 @@ BEGIN
             INSERT (DocEntry, DocNum, DocDate, CardCode, CardName, DocTotal, CANCELED, UpdateDate)
             VALUES (src.DocEntry, src.DocNum, src.DocDate, src.CardCode, src.CardName, src.DocTotal, src.CANCELED, src.UpdateDate);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'ORPC' AS SourceTable, MAX(UpdateDate) AS LastLoadDate FROM bronze.ORPC) s
@@ -882,8 +882,8 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate=s.LastLoadDate, UpdatedAt=GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (s.SourceTable, s.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_ORPC', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_ORPC', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @Err = ERROR_MESSAGE();
@@ -921,7 +921,7 @@ CREATE PROCEDURE dbo.sp_Merge_RPC1
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @Err NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @Err NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.RPC1 tgt
@@ -934,7 +934,7 @@ BEGIN
             INSERT (DocEntry, LineNum, ItemCode, Dscription, LineTotal, Quantity, StockPrice, WhsCode)
             VALUES (src.DocEntry, src.LineNum, src.ItemCode, src.Dscription, src.LineTotal, src.Quantity, src.StockPrice, src.WhsCode);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'RPC1' AS SourceTable, GETDATE() AS LastLoadDate) s
@@ -942,8 +942,8 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate=s.LastLoadDate, UpdatedAt=GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (s.SourceTable, s.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_RPC1', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_RPC1', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @Err = ERROR_MESSAGE();
@@ -982,7 +982,7 @@ CREATE PROCEDURE dbo.sp_Merge_OPDN
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @Err NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @Err NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.OPDN tgt
@@ -995,7 +995,7 @@ BEGIN
             INSERT (DocEntry, DocNum, DocDate, CardCode, CardName, DocTotal, CANCELED, UpdateDate)
             VALUES (src.DocEntry, src.DocNum, src.DocDate, src.CardCode, src.CardName, src.DocTotal, src.CANCELED, src.UpdateDate);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'OPDN' AS SourceTable, MAX(UpdateDate) AS LastLoadDate FROM bronze.OPDN) s
@@ -1003,8 +1003,8 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate=s.LastLoadDate, UpdatedAt=GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (s.SourceTable, s.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_OPDN', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_OPDN', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @Err = ERROR_MESSAGE();
@@ -1042,7 +1042,7 @@ CREATE PROCEDURE dbo.sp_Merge_PDN1
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @StartTime DATETIME = GETDATE(), @RowCount INT = 0, @Err NVARCHAR(MAX);
+    DECLARE @StartTime DATETIME = GETDATE(), @Row_Count INT = 0, @Err NVARCHAR(MAX);
 
     BEGIN TRY
         MERGE bronze.PDN1 tgt
@@ -1055,7 +1055,7 @@ BEGIN
             INSERT (DocEntry, LineNum, ItemCode, Dscription, LineTotal, Quantity, StockPrice, WhsCode)
             VALUES (src.DocEntry, src.LineNum, src.ItemCode, src.Dscription, src.LineTotal, src.Quantity, src.StockPrice, src.WhsCode);
 
-        SET @RowCount = @@ROWCOUNT;
+        SET @Row_Count = @Row_Count;
 
         MERGE dbo.ETL_Checkpoints chk
         USING (SELECT 'PDN1' AS SourceTable, GETDATE() AS LastLoadDate) s
@@ -1063,8 +1063,8 @@ BEGIN
         WHEN MATCHED THEN UPDATE SET LastLoadDate=s.LastLoadDate, UpdatedAt=GETDATE()
         WHEN NOT MATCHED THEN INSERT (SourceTable, LastLoadDate, UpdatedAt) VALUES (s.SourceTable, s.LastLoadDate, GETDATE());
 
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
-        VALUES ('sp_Merge_PDN1', @StartTime, GETDATE(), 'Success', @RowCount);
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
+        VALUES ('sp_Merge_PDN1', @StartTime, GETDATE(), 'Success', @Row_Count);
     END TRY
     BEGIN CATCH
         SET @Err = ERROR_MESSAGE();
