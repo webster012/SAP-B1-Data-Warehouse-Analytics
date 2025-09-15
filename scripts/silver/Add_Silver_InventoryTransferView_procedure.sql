@@ -68,12 +68,12 @@ BEGIN
         LEFT JOIN bronze.OITB g ON i.ItmsGrpCod = g.ItmsGrpCod;
 
         /* Log success */
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
         VALUES ('sp_Load_Silver_InventoryTransferView', @StartTime, GETDATE(), 'Success', (SELECT COUNT(*) FROM silver.InventoryTransferView));
     END TRY
     BEGIN CATCH
         SET @Err = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Load_Silver_InventoryTransferView', @StartTime, GETDATE(), 'Failed', 0, @Err);
         THROW;
     END CATCH
