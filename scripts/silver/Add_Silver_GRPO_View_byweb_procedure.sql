@@ -159,12 +159,12 @@ BEGIN
                  l.Quantity, l.DiscPrcnt, l.PriceBefDi, l.LineTotal, h.Series, n.SeriesName;
 
         /* Log success */
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
         VALUES ('sp_Load_Silver_GRPO_View_byweb', @StartTime, GETDATE(), 'Success', (SELECT COUNT(*) FROM silver.GRPO_View_byweb));
     END TRY
     BEGIN CATCH
         SET @Err = ERROR_MESSAGE();
-        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count, ErrorMessage)
         VALUES ('sp_Load_Silver_GRPO_View_byweb', @StartTime, GETDATE(), 'Failed', 0, @Err);
         THROW;
     END CATCH
