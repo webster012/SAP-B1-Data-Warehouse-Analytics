@@ -1,0 +1,191 @@
+/* ================================================================
+# 🧩 Merge Procedures for This document covers the merge logic for newly added tables:
+- [@ITMC] - Item Classification
+- [@ITMCAT] - Item Category
+- [@ITMSUBCAT] - Item Subcategory
+- [@ITMSUBCAT2] - Item Subcategory 2
+- [@ITMSUP] - Item Suppliers
+================================================================ */
+
+USE DataWarehouse;
+GO
+
+/* ================================================================
+   ITEM CLASSIFICATION - [@ITMC]
+================================================================ */
+IF OBJECT_ID('dbo.sp_Merge_ITMC','P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_Merge_ITMC;
+GO
+
+CREATE PROCEDURE dbo.sp_Merge_ITMC
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @StartTime DATETIME = GETDATE();
+    DECLARE @Err NVARCHAR(MAX);
+
+    BEGIN TRY
+        MERGE bronze.ITMC AS tgt
+        USING bronze.stg_ITMC AS src
+            ON tgt.Code = src.Code
+        WHEN MATCHED THEN
+            UPDATE SET Name = src.Name
+        WHEN NOT MATCHED THEN
+            INSERT (Code, Name)
+            VALUES (src.Code, src.Name);
+
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
+        VALUES ('sp_Merge_ITMC', @StartTime, GETDATE(), 'Success', @@ROWCOUNT);
+    END TRY
+    BEGIN CATCH
+        SET @Err = ERROR_MESSAGE();
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        VALUES ('sp_Merge_ITMC', @StartTime, GETDATE(), 'Failed', 0, @Err);
+        THROW;
+    END CATCH
+END;
+GO
+
+/* ================================================================
+   ITEM CATEGORY - [@ITMCAT]
+================================================================ */
+IF OBJECT_ID('dbo.sp_Merge_ITMCAT','P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_Merge_ITMCAT;
+GO
+
+CREATE PROCEDURE dbo.sp_Merge_ITMCAT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @StartTime DATETIME = GETDATE();
+    DECLARE @Err NVARCHAR(MAX);
+
+    BEGIN TRY
+        MERGE bronze.ITMCAT AS tgt
+        USING bronze.stg_ITMCAT AS src
+            ON tgt.Code = src.Code
+        WHEN MATCHED THEN
+            UPDATE SET Name = src.Name
+        WHEN NOT MATCHED THEN
+            INSERT (Code, Name)
+            VALUES (src.Code, src.Name);
+
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
+        VALUES ('sp_Merge_ITMCAT', @StartTime, GETDATE(), 'Success', @@ROWCOUNT);
+    END TRY
+    BEGIN CATCH
+        SET @Err = ERROR_MESSAGE();
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        VALUES ('sp_Merge_ITMCAT', @StartTime, GETDATE(), 'Failed', 0, @Err);
+        THROW;
+    END CATCH
+END;
+GO
+
+/* ================================================================
+   ITEM SUBCATEGORY - [@ITMSUBCAT]
+================================================================ */
+IF OBJECT_ID('dbo.sp_Merge_ITMSUBCAT','P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_Merge_ITMSUBCAT;
+GO
+
+CREATE PROCEDURE dbo.sp_Merge_ITMSUBCAT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @StartTime DATETIME = GETDATE();
+    DECLARE @Err NVARCHAR(MAX);
+
+    BEGIN TRY
+        MERGE bronze.ITMSUBCAT AS tgt
+        USING bronze.stg_ITMSUBCAT AS src
+            ON tgt.Code = src.Code
+        WHEN MATCHED THEN
+            UPDATE SET Name = src.Name
+        WHEN NOT MATCHED THEN
+            INSERT (Code, Name)
+            VALUES (src.Code, src.Name);
+
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
+        VALUES ('sp_Merge_ITMSUBCAT', @StartTime, GETDATE(), 'Success', @@ROWCOUNT);
+    END TRY
+    BEGIN CATCH
+        SET @Err = ERROR_MESSAGE();
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        VALUES ('sp_Merge_ITMSUBCAT', @StartTime, GETDATE(), 'Failed', 0, @Err);
+        THROW;
+    END CATCH
+END;
+GO
+
+/* ================================================================
+   ITEM SUBCATEGORY2 - [@ITMSUBCAT2]
+================================================================ */
+IF OBJECT_ID('dbo.sp_Merge_ITMSUBCAT2','P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_Merge_ITMSUBCAT2;
+GO
+
+CREATE PROCEDURE dbo.sp_Merge_ITMSUBCAT2
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @StartTime DATETIME = GETDATE();
+    DECLARE @Err NVARCHAR(MAX);
+
+    BEGIN TRY
+        MERGE bronze.ITMSUBCAT2 AS tgt
+        USING bronze.stg_ITMSUBCAT2 AS src
+            ON tgt.Code = src.Code
+        WHEN MATCHED THEN
+            UPDATE SET Name = src.Name
+        WHEN NOT MATCHED THEN
+            INSERT (Code, Name)
+            VALUES (src.Code, src.Name);
+
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
+        VALUES ('sp_Merge_ITMSUBCAT2', @StartTime, GETDATE(), 'Success', @@ROWCOUNT);
+    END TRY
+    BEGIN CATCH
+        SET @Err = ERROR_MESSAGE();
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        VALUES ('sp_Merge_ITMSUBCAT2', @StartTime, GETDATE(), 'Failed', 0, @Err);
+        THROW;
+    END CATCH
+END;
+GO
+
+/* ================================================================
+   ITEM SUPPLIERS - [@ITMSUP]
+================================================================ */
+IF OBJECT_ID('dbo.sp_Merge_ITMSUP','P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_Merge_ITMSUP;
+GO
+
+CREATE PROCEDURE dbo.sp_Merge_ITMSUP
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @StartTime DATETIME = GETDATE();
+    DECLARE @Err NVARCHAR(MAX);
+
+    BEGIN TRY
+        MERGE bronze.ITMSUP AS tgt
+        USING bronze.stg_ITMSUP AS src
+            ON tgt.Code = src.Code
+        WHEN MATCHED THEN
+            UPDATE SET Name = src.Name
+        WHEN NOT MATCHED THEN
+            INSERT (Code, Name)
+            VALUES (src.Code, src.Name);
+
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount)
+        VALUES ('sp_Merge_ITMSUP', @StartTime, GETDATE(), 'Success', @@ROWCOUNT);
+    END TRY
+    BEGIN CATCH
+        SET @Err = ERROR_MESSAGE();
+        INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, RowCount, ErrorMessage)
+        VALUES ('sp_Merge_ITMSUP', @StartTime, GETDATE(), 'Failed', 0, @Err);
+        THROW;
+    END CATCH
+END;
+GO
