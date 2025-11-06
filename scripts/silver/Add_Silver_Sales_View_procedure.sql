@@ -1,6 +1,6 @@
-/*Title: Add Silver Sales_View procedure
-
-Comment: Refactored to exact UNION ALL logic of original SALES_VIEW*/
+/*Title: Add Silver Sales_View procedure (with Classification Tables)
+Comment: Refactored to exact UNION ALL logic of original SALES_VIEW, now includes item classification hierarchy joins.
+*/
 
 USE DataWarehouse;
 GO
@@ -43,12 +43,21 @@ CREATE TABLE silver.Sales_View (
     Series                     INT,
     SeriesName                 NVARCHAR(200),
     CardType                   NVARCHAR(50),
+
+    -- 🆕 Classification hierarchy fields
+    ItemClassification         NVARCHAR(200),
+    ItemCategories             NVARCHAR(200),
+    ItemSubCategories1         NVARCHAR(200),
+    ItemSubCategories2         NVARCHAR(200),
+    ItemSuppliers              NVARCHAR(200),
+
     LoadDate                   DATETIME DEFAULT GETDATE()
 );
 GO
 
+
 /* ------------------------------------------------
-   2) Stored proc with UNION ALL (clone of SALES_VIEW)
+   2) Stored proc with UNION ALL (clone of SALES_VIEW + Classification)
    ------------------------------------------------ */
 IF OBJECT_ID('dbo.sp_Load_Silver_Sales_View','P') IS NOT NULL
     DROP PROCEDURE dbo.sp_Load_Silver_Sales_View;
@@ -71,8 +80,10 @@ BEGIN
             ItemCode, ItemDesc, SalesTotal, LineTotal, NetSalesAmt, GrssProfit,
             GP_Percent, ItemCost, SalePrice, Qty, SalesAtCost,
             AgentCode, Agent, SalesClassificationCode, SalesClassification,
-            WhsCode, Series, SeriesName, CardType
+            WhsCode, Series, SeriesName, CardType,
+            ItemClassification, ItemCategories, ItemSubCategories1, ItemSubCategories2, ItemSuppliers
         )
+
         /* ---------------------------
            Invoices
            --------------------------- */
@@ -118,7 +129,14 @@ BEGIN
             l.WhsCode,
             n.Series,
             n.SeriesName,
-            c.CardType
+            c.CardType,
+
+            COALESCE(ic.Name, '<BLANK>') AS ItemClassification,
+            COALESCE(cat.Name, '<BLANK>') AS ItemCategories,
+            COALESCE(sub1.Name, '<BLANK>') AS ItemSubCategories1,
+            COALESCE(sub2.Name, '<BLANK>') AS ItemSubCategories2,
+            COALESCE(sup.Name, '<BLANK>') AS ItemSuppliers
+
         FROM bronze.OINV h
         INNER JOIN bronze.OCRD c ON h.CardCode = c.CardCode
         LEFT JOIN bronze.INV1 l ON h.DocEntry = l.DocEntry
@@ -127,13 +145,19 @@ BEGIN
         LEFT JOIN bronze.SAT sat ON c.U_AGENTS = sat.Code
         LEFT JOIN bronze.SCT sct ON c.U_SALES_CLASSIFICATION = sct.Code
         LEFT JOIN bronze.NNM1 n ON h.Series = n.Series
+        LEFT JOIN dbo.[@ITMC] ic ON i.U_ITEM_CLASSIFICATION = ic.Code
+        LEFT JOIN dbo.[@ITMCAT] cat ON i.U_Item_Categories = cat.Code
+        LEFT JOIN dbo.[@ITMSUBCAT] sub1 ON i.U_Item_Subcategories = sub1.Code
+        LEFT JOIN dbo.[@ITMSUBCAT2] sub2 ON i.U_Item_Subcategories2 = sub2.Code
+        LEFT JOIN dbo.[@ITMSUP] sup ON i.U_Item_Suppliers = sup.Code
         WHERE h.CANCELED = 'N'
           AND h.DocNum NOT IN (80002985, 80002986, 80002987)
         GROUP BY 
             h.DocNum, g.ItmsGrpCod, g.ItmsGrpNam, h.DocDate, h.CardCode, h.CardName, 
             h.DocTotal, c.Balance, l.ItemCode, l.Dscription, l.LineTotal, 
             l.GrssProfit, l.StockPrice, l.Price, l.Quantity, sat.Code, sat.Name, 
-            sct.Code, sct.Name, n.Series, n.SeriesName, c.CardType, l.WhsCode, h.DocType
+            sct.Code, sct.Name, n.Series, n.SeriesName, c.CardType, l.WhsCode, h.DocType,
+            ic.Name, cat.Name, sub1.Name, sub2.Name, sup.Name
 
         UNION ALL
 
@@ -182,7 +206,14 @@ BEGIN
             l.WhsCode,
             n.Series,
             n.SeriesName,
-            c.CardType
+            c.CardType,
+
+            COALESCE(ic.Name, '<BLANK>') AS ItemClassification,
+            COALESCE(cat.Name, '<BLANK>') AS ItemCategories,
+            COALESCE(sub1.Name, '<BLANK>') AS ItemSubCategories1,
+            COALESCE(sub2.Name, '<BLANK>') AS ItemSubCategories2,
+            COALESCE(sup.Name, '<BLANK>') AS ItemSuppliers
+
         FROM bronze.ORIN h
         INNER JOIN bronze.OCRD c ON h.CardCode = c.CardCode
         LEFT JOIN bronze.RIN1 l ON h.DocEntry = l.DocEntry
@@ -191,13 +222,19 @@ BEGIN
         LEFT JOIN bronze.SAT sat ON c.U_AGENTS = sat.Code
         LEFT JOIN bronze.SCT sct ON c.U_SALES_CLASSIFICATION = sct.Code
         LEFT JOIN bronze.NNM1 n ON h.Series = n.Series
+        LEFT JOIN dbo.[@ITMC] ic ON i.U_ITEM_CLASSIFICATION = ic.Code
+        LEFT JOIN dbo.[@ITMCAT] cat ON i.U_Item_Categories = cat.Code
+        LEFT JOIN dbo.[@ITMSUBCAT] sub1 ON i.U_Item_Subcategories = sub1.Code
+        LEFT JOIN dbo.[@ITMSUBCAT2] sub2 ON i.U_Item_Subcategories2 = sub2.Code
+        LEFT JOIN dbo.[@ITMSUP] sup ON i.U_Item_Suppliers = sup.Code
         WHERE h.CANCELED = 'N'
           AND h.DocNum NOT IN (80002985, 80002986, 80002987)
         GROUP BY 
             h.DocNum, g.ItmsGrpCod, g.ItmsGrpNam, h.DocDate, h.CardCode, h.CardName, 
             h.DocTotal, c.Balance, l.ItemCode, l.Dscription, l.LineTotal, 
             l.GrssProfit, l.StockPrice, l.Price, l.Quantity, sat.Code, sat.Name, 
-            sct.Code, sct.Name, n.Series, n.SeriesName, c.CardType, l.WhsCode, h.DocType;
+            sct.Code, sct.Name, n.Series, n.SeriesName, c.CardType, l.WhsCode, h.DocType,
+            ic.Name, cat.Name, sub1.Name, sub2.Name, sup.Name;
 
         /* Log success */
         INSERT INTO dbo.ETL_RunLog (PackageName, StartTime, EndTime, Status, Row_Count)
