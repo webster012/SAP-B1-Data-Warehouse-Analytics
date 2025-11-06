@@ -1,1 +1,88 @@
+USE DataWarehouse;
+GO
+
+/* ============================================================
+   1️⃣  ITEM CLASSIFICATION TABLE  ([@ITMC])
+============================================================ */
+IF OBJECT_ID('bronze.ITMC', 'U') IS NOT NULL DROP TABLE bronze.ITMC;
+CREATE TABLE bronze.ITMC (
+    Code NVARCHAR(50) PRIMARY KEY,
+    Name NVARCHAR(200)
+);
+GO
+
+IF OBJECT_ID('bronze.stg_ITMC', 'U') IS NOT NULL DROP TABLE bronze.stg_ITMC;
+CREATE TABLE bronze.stg_ITMC (
+    Code NVARCHAR(50),
+    Name NVARCHAR(200)
+);
+GO
+
+/* ============================================================
+   2️⃣  ITEM CATEGORY TABLE  ([@ITMCAT])
+============================================================ */
+IF OBJECT_ID('bronze.ITMCAT', 'U') IS NOT NULL DROP TABLE bronze.ITMCAT;
+CREATE TABLE bronze.ITMCAT (
+    Code NVARCHAR(50) PRIMARY KEY,
+    Name NVARCHAR(200)
+);
+GO
+
+IF OBJECT_ID('bronze.stg_ITMCAT', 'U') IS NOT NULL DROP TABLE bronze.stg_ITMCAT;
+CREATE TABLE bronze.stg_ITMCAT (
+    Code NVARCHAR(50),
+    Name NVARCHAR(200)
+);
+GO
+
+/* ============================================================
+   3️⃣  ITEM SUBCATEGORY TABLE  ([@ITMSUBCAT])
+============================================================ */
+IF OBJECT_ID('bronze.ITMSUBCAT', 'U') IS NOT NULL DROP TABLE bronze.ITMSUBCAT;
+CREATE TABLE bronze.ITMSUBCAT (
+    Code NVARCHAR(50) PRIMARY KEY,
+    Name NVARCHAR(200)
+);
+GO
+
+IF OBJECT_ID('bronze.stg_ITMSUBCAT', 'U') IS NOT NULL DROP TABLE bronze.stg_ITMSUBCAT;
+CREATE TABLE bronze.stg_ITMSUBCAT (
+    Code NVARCHAR(50),
+    Name NVARCHAR(200)
+);
+GO
+
+/* ============================================================
+   4️⃣  ITEM SUBCATEGORY2 TABLE  ([@ITMSUBCAT2])
+============================================================ */
+IF OBJECT_ID('bronze.ITMSUBCAT2', 'U') IS NOT NULL DROP TABLE bronze.ITMSUBCAT2;
+CREATE TABLE bronze.ITMSUBCAT2 (
+    Code NVARCHAR(50) PRIMARY KEY,
+    Name NVARCHAR(200)
+);
+GO
+
+IF OBJECT_ID('bronze.stg_ITMSUBCAT2', 'U') IS NOT NULL DROP TABLE bronze.stg_ITMSUBCAT2;
+CREATE TABLE bronze.stg_ITMSUBCAT2 (
+    Code NVARCHAR(50),
+    Name NVARCHAR(200)
+);
+GO
+
+/* ============================================================
+   5️⃣  ITEM SUPPLIERS TABLE  ([@ITMSUP])
+============================================================ */
+IF OBJECT_ID('bronze.ITMSUP', 'U') IS NOT NULL DROP TABLE bronze.ITMSUP;
+CREATE TABLE bronze.ITMSUP (
+    Code NVARCHAR(50) PRIMARY KEY,
+    Name NVARCHAR(200)
+);
+GO
+
+IF OBJECT_ID('bronze.stg_ITMSUP', 'U') IS NOT NULL DROP TABLE bronze.stg_ITMSUP;
+CREATE TABLE bronze.stg_ITMSUP (
+    Code NVARCHAR(50),
+    Name NVARCHAR(200)
+);
+GO
 
